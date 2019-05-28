@@ -22,7 +22,7 @@ activity_labels <- read("activity_labels", c("activity_id", "activity_label"))
 data_merged <- rbind(read("train/X_train", features),read("test/X_test", features))
 
 # to filter measurements
-is_std_or_mean <- grepl("-mean()|-std()", features)
+is_std_or_mean <- grepl("-mean\\(\\)|-std\\(\\)", features)
 
 # measurements for stds and means
 data_filtered <- data_merged[is_std_or_mean]
@@ -31,7 +31,7 @@ data_filtered <- data_merged[is_std_or_mean]
 activity_id <- rbind(read("train/Y_train"), read("test/Y_test"))
 
 data_activities <- data_filtered
-data_activities$activity_id <- full_activity_id$V1
+data_activities$activity_id <- activity_id$V1
 data_activities <- data_activities %>% left_join(activity_labels)
 
 # subject info
@@ -44,3 +44,5 @@ data_full$subject_id <- subjects$V1
 data_means <- data_full %>%
   group_by(activity_id, activity_label, subject_id) %>%
   summarize_all(funs(mean))
+
+write.table(data_means, "tidy_data.txt", row.names = F)
